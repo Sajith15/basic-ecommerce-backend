@@ -31,6 +31,7 @@ const verifyJWT = (req, res, next) => {
 
     req.username = user.username;
     req.userId = user.id;
+    req.type = user.type;
 
     next();
   });

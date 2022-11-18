@@ -39,8 +39,9 @@ app.use("/auth", require("./routes/auth"));
 
 // MiddleWare for Protected routes
 app.use(verifyJWT);
-// app.use("/buyer", require("./routes/buyer"));
-// app.use("/seller", require("./routes/seller"));
+
+app.use("/buyer", require("./routes/buyer"));
+app.use("/seller", require("./routes/seller"));
 
 app.all("*", (req, res) => {
   res.status(404).send({

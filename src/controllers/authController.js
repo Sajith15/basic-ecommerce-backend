@@ -1,26 +1,22 @@
 const bcrypt = require("bcrypt");
-const connectDB = require("../../config/dbConn");
-const createNewDB = require("../../config/createDBWrapper");
-const getUser = require("../../utils/getUser");
-const { validateRegister, validateLogin } = require("../../schemas/validateUser");
-const { databases, tables } = require("../../constants/dbTableConstants");
-const { getAccessToken, getRefreshToken } = require("../../utils/createJWT");
+const connectDB = require("../config/dbConn");
+const getUser = require("../utils/getUser");
+const { validateRegister, validateLogin } = require("../validations/validateUser");
+const { databases, tables } = require("../constants/dbTableConstants");
+const { getAccessToken, getRefreshToken } = require("../utils/createJWT");
 require("dotenv").config();
 
 const handleRegister = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, type } = req.body;
 
   //Validate data
-  const isValid = validateRegister({ username, password });
+  const isValid = validateRegister({ username, password, type });
 
   //Invalid checks
   if (isValid.error)
     return res.status(400).json({ message: isValid.error.details[0].message });
 
   try {
-    //Create DB if not exists
-    await createNewDB(databases.ECOMMERCE);
-
     //Connect to pool
     const pool = await connectDB(databases.ECOMMERCE);
 
@@ -29,8 +25,8 @@ const handleRegister = async (req, res) => {
 
     //Insert into DB
     const [result] = await pool.query(
-      `INSERT INTO ${tables.USERS} (username, password) VALUES (?, ?)`,
-      [username, hashedPwd]
+      `INSERT INTO ${tables.USERS} (username, password, type) VALUES (?, ?, ?)`,
+      [username, hashedPwd, type]
     );
 
     //Get ID from result
@@ -38,11 +34,11 @@ const handleRegister = async (req, res) => {
 
     //Get user by id
     const user = await getUser(databases.ECOMMERCE, tables.USERS, "id", id);
-    const username = user.username;
+    const userName = user.username;
 
     //Create Access and Refresh Tokens
-    const accessToken = getAccessToken(username);
-    const refreshToken = getRefreshToken(username);
+    const accessToken = getAccessToken(userName);
+    const refreshToken = getRefreshToken(userName);
 
     //Set Refresh Token to cookies
     res.cookie("jwt", refreshToken, {

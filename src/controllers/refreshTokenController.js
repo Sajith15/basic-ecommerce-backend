@@ -1,6 +1,6 @@
-const { getAccessToken } = require("../../utils/createJWT");
-const { databases, tables } = require("../../constants/dbTableConstants");
-const getUser = require("../../utils/getUser");
+const { getAccessToken } = require("../utils/createJWT");
+const { databases, tables } = require("../constants/dbTableConstants");
+const getUser = require("../utils/getUser");
 require("dotenv").config();
 const jwt = require("jsonwebtoken")
 
@@ -20,7 +20,7 @@ const handleRefreshToken = (req, res) => {
       const username = decoded.username;
 
       //Check for username in database
-      const user = await getUser(databases.ERPVERSE_MASTERDB, tables.USERS, "username", username);
+      const user = await getUser(databases.ECOMMERCE, tables.USERS, "username", username);
       if (!user) return res.sendStatus(403);
 
       //Get new access token

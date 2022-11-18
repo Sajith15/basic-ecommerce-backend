@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const authController = require("../controllers/authentication/authController");
-const refreshTokenController = require("../controllers/authentication/refreshTokenController");
+const authController = require("../controllers/authController");
+const refreshTokenController = require("../controllers/refreshTokenController");
 
 router.post("/register", authController.handleRegister);
 router.post("/login", authController.handleLogin);
